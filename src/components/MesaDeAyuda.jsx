@@ -1,16 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Ticket from './Ticket';
 import { TICKETS_INICIALES } from '../data/tickets';
 
 const CICLO_ESTADOS = ['Abierto', 'En proceso', 'Cerrado'];
 
 function MesaDeAyuda() {
+  // Estado principal: la lista de tickets
   const [tickets, setTickets] = useState(TICKETS_INICIALES);
+
+  // Campos controlados del formulario (R2)
   const [titulo, setTitulo] = useState('');
   const [prioridad, setPrioridad] = useState('Media');
   const [error, setError] = useState('');
+
+  // Filtro por prioridad (R4)
   const [filtro, setFiltro] = useState('Todas');
 
+  // R6: efecto de observación
+  useEffect(() => {
+    console.log(`La lista tiene ${tickets.length} tickets`);
+  }, [tickets]);
+
+  // R2: agregar ticket con validación
   const handleAgregar = () => {
     if (titulo.trim().length < 5) {
       setError('El título debe tener al menos cinco caracteres');
@@ -27,21 +38,23 @@ function MesaDeAyuda() {
     setTitulo('');
   };
 
+  // R3: avance de estado sin mutar el arreglo original
   const handleAvanzar = (id) => {
     setTickets(
       tickets.map((t) => {
         if (t.id !== id) return t;
         const idx = CICLO_ESTADOS.indexOf(t.estado);
-        if (idx === CICLO_ESTADOS.length - 1) return t;
+        if (idx === CICLO_ESTADOS.length - 1) return t; // ya está Cerrado
         return { ...t, estado: CICLO_ESTADOS[idx + 1] };
       })
     );
   };
 
+  // R4: lista filtrada (derivada, no es estado propio)
   const ticketsFiltrados =
     filtro === 'Todas' ? tickets : tickets.filter((t) => t.prioridad === filtro);
 
-  // R5: resumen derivado, contando TODOS los tickets
+  // R5: resumen derivado a partir de TODOS los tickets, no de los filtrados
   const abiertos = tickets.filter((t) => t.estado === 'Abierto').length;
   const enProceso = tickets.filter((t) => t.estado === 'En proceso').length;
   const cerrados = tickets.filter((t) => t.estado === 'Cerrado').length;
