@@ -2,6 +2,8 @@ import { useState } from 'react';
 import Ticket from './Ticket';
 import { TICKETS_INICIALES } from '../data/tickets';
 
+const CICLO_ESTADOS = ['Abierto', 'En proceso', 'Cerrado'];
+
 function MesaDeAyuda() {
   const [tickets, setTickets] = useState(TICKETS_INICIALES);
   const [titulo, setTitulo] = useState('');
@@ -22,6 +24,18 @@ function MesaDeAyuda() {
     };
     setTickets([...tickets, nuevoTicket]);
     setTitulo('');
+  };
+
+  // R3: avance de estado sin mutar el arreglo original
+  const handleAvanzar = (id) => {
+    setTickets(
+      tickets.map((t) => {
+        if (t.id !== id) return t;
+        const idx = CICLO_ESTADOS.indexOf(t.estado);
+        if (idx === CICLO_ESTADOS.length - 1) return t; // ya está Cerrado
+        return { ...t, estado: CICLO_ESTADOS[idx + 1] };
+      })
+    );
   };
 
   return (
@@ -62,7 +76,7 @@ function MesaDeAyuda() {
             titulo={t.titulo}
             prioridad={t.prioridad}
             estado={t.estado}
-            onAvanzar={() => {}}
+            onAvanzar={() => handleAvanzar(t.id)}
           />
         ))}
       </ul>
