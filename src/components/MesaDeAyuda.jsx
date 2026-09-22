@@ -38,9 +38,13 @@ function MesaDeAyuda() {
     );
   };
 
-  // R4: lista filtrada por prioridad
   const ticketsFiltrados =
     filtro === 'Todas' ? tickets : tickets.filter((t) => t.prioridad === filtro);
+
+  // R5: resumen derivado, contando TODOS los tickets
+  const abiertos = tickets.filter((t) => t.estado === 'Abierto').length;
+  const enProceso = tickets.filter((t) => t.estado === 'En proceso').length;
+  const cerrados = tickets.filter((t) => t.estado === 'Cerrado').length;
 
   return (
     <div className="container py-4">
@@ -100,6 +104,12 @@ function MesaDeAyuda() {
           />
         ))}
       </ul>
+
+      {/* R5: resumen derivado */}
+      <p className="text-muted small">
+        Abiertos: <strong>{abiertos}</strong> · En proceso: <strong>{enProceso}</strong> · Cerrados:{' '}
+        <strong>{cerrados}</strong>
+      </p>
     </div>
   );
 }
