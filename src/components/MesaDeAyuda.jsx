@@ -9,6 +9,7 @@ function MesaDeAyuda() {
   const [titulo, setTitulo] = useState('');
   const [prioridad, setPrioridad] = useState('Media');
   const [error, setError] = useState('');
+  const [filtro, setFiltro] = useState('Todas');
 
   const handleAgregar = () => {
     if (titulo.trim().length < 5) {
@@ -26,17 +27,20 @@ function MesaDeAyuda() {
     setTitulo('');
   };
 
-  // R3: avance de estado sin mutar el arreglo original
   const handleAvanzar = (id) => {
     setTickets(
       tickets.map((t) => {
         if (t.id !== id) return t;
         const idx = CICLO_ESTADOS.indexOf(t.estado);
-        if (idx === CICLO_ESTADOS.length - 1) return t; // ya está Cerrado
+        if (idx === CICLO_ESTADOS.length - 1) return t;
         return { ...t, estado: CICLO_ESTADOS[idx + 1] };
       })
     );
   };
+
+  // R4: lista filtrada por prioridad
+  const ticketsFiltrados =
+    filtro === 'Todas' ? tickets : tickets.filter((t) => t.prioridad === filtro);
 
   return (
     <div className="container py-4">
@@ -68,9 +72,25 @@ function MesaDeAyuda() {
       </div>
       {error && <div className="text-danger small">{error}</div>}
 
+      {/* R4: filtro por prioridad */}
+      <div className="d-flex align-items-center gap-2 mt-4 mb-2">
+        <label>Filtrar por prioridad</label>
+        <select
+          className="form-select form-select-sm"
+          style={{ maxWidth: 140 }}
+          value={filtro}
+          onChange={(e) => setFiltro(e.target.value)}
+        >
+          <option value="Todas">Todas</option>
+          <option value="Alta">Alta</option>
+          <option value="Media">Media</option>
+          <option value="Baja">Baja</option>
+        </select>
+      </div>
+
       {/* R1: lista con componente hijo */}
       <ul className="list-unstyled">
-        {tickets.map((t) => (
+        {ticketsFiltrados.map((t) => (
           <Ticket
             key={t.id}
             titulo={t.titulo}
